@@ -183,6 +183,11 @@ class OrcmSystem (OrcmBaseSystem):
 
     def signal_process_groups (self, specs, signame="SIGINT"):
         my_process_groups = self.process_groups.q_get(specs)
+        for pg in my_process_groups:
+            OrcmBaseSystem.cancel_session(self, pg.jobid)
+            pg.exit_status = 0
+            for host in pg.location:
+                self.running_nodes.discard(host)
         return my_process_groups
     signal_process_groups = exposed(query(signal_process_groups))
 
