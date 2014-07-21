@@ -54,6 +54,10 @@ orcm.orcmapi_finalize.argtypes = []
 orcm.orcmapi_finalize.restype = c_int
 orcm.orcmapi_get_nodes.argtypes = [POINTER(PP_node_t), POINTER(c_int)]
 orcm.orcmapi_get_nodes.restype = c_int
+orcm.orcmapi_launch_session.argtypes = [c_int, c_int, c_char_p, c_char_p]
+orcm.orcmapi_launch_session.restype = c_int
+orcm.orcmapi_cancel_session.argtypes = [c_int]
+orcm.orcmapi_cancel_session.restype = c_int
 
 __config = ConfigParser.ConfigParser()
 __config.read(Cobalt.CONFIG_FILES)
@@ -164,9 +168,9 @@ class OrcmBaseSystem (Component):
 
         self.logger.info("allocation timeout set to %d seconds." % self.alloc_timeout)
 
-    def __del__(self):
+    def __del__ (self):
         orcm.orcmapi_finalize()
-    
+
     def __getstate__(self):
         state = {}
         state.update(Component.__getstate__(self))
@@ -647,6 +651,20 @@ class OrcmBaseSystem (Component):
         '''
         #TODO: ORCM_launch
 
+    def launch_session(self, jobid, nodes, nodelist, user):
+        o_user = c_char_p(user)
+        o_jobid = c_int(jobid)
+        o_nodes = c_int(nodes)
+        o_nodelist = c_char_p(nodelist)
+        retval = orcm.orcmapi_launch_session(o_jobid, o_nodes, o_nodelist, o_user)
+        return retval
+    launch_session = exposed(launch_session)
+
+    def cancel_session(self, jobid):
+        o_jobid = c_int(jobid)
+        retval = orcm.orcmapi_cancel_session(o_jobid)
+        return retval
+    cancel_session = exposed(cancel_session)
 
     def del_process_groups(self, jobid):
         '''Set actions to take when deleting process groups.  This must be

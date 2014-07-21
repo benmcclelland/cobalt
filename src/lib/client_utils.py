@@ -166,10 +166,10 @@ def component_call(comp_name, defer, func_name, args, exit_on_error = True):
         
     debug_msg = 'component: "%s.%s", defer: %s\n  %s(\n' % (comp_name, func_name, str(defer), func_name)
 
-    for arg in args:
-        debug_msg += '     %s,\n' % (str(arg),)
-    debug_msg += '     )\n\n'
-    logger.debug(debug_msg)
+#    for arg in args:
+#        debug_msg += '     %s,\n' % (str(arg),)
+#    debug_msg += '     )\n\n'
+#    logger.debug(debug_msg)
 
     if client_data.components[comp_name]['conn'] is None or \
        client_data.components[comp_name]['defer'] != defer:
